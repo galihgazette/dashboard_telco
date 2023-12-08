@@ -13,6 +13,8 @@ if (!is_numeric($id)) {
     die("ID tidak valid");
 }
 
+
+
 // Query SQL untuk delete
 $deleteQuery = "DELETE FROM config_status_telco WHERE ID=?";
 $deleteStmt = $conn->prepare($deleteQuery);
@@ -24,6 +26,8 @@ if ($deleteStmt->execute()) {
 } else {
     echo "Error: " . $deleteStmt->error;
 }
+
+
 
 echo '<br><a href="index.php">kembali ke Home</a>';
 

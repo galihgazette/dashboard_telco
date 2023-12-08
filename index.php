@@ -31,7 +31,7 @@ $result = $conn->query($query);
 		th,
 		td {
 			border: 1px solid #ddd;
-			padding: 8px;
+			padding: 6px;
 			text-align: left;
 		}
 
@@ -63,7 +63,7 @@ $result = $conn->query($query);
 		}
 
 		.edit-icon {
-			color: greenyellow;
+			color: green;
 		}
 	</style>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
@@ -80,7 +80,7 @@ $result = $conn->query($query);
 	<table id="dataTable">
 		<thead>
 			<tr>
-				<th>ID</th>
+				<th>No.</th>
 				<th>Operator</th>
 				<th>Server</th>
 				<th>Status Error</th>
@@ -88,6 +88,7 @@ $result = $conn->query($query);
 				<th>Vendor</th>
 				<th>URL</th>
 				<th>File name</th>
+				<th>Time log</th>
 				<th></th>
 				<th></th>
 			</tr>
@@ -96,9 +97,13 @@ $result = $conn->query($query);
 			<?php
 			//data dalam tabel
 			if ($result->num_rows > 0) {
+
+				$counter = 1;
+
 				while ($row = $result->fetch_assoc()) {
 					echo "<tr>";
-					echo "<td>" . $row["id"] . "</td>";
+					//echo "<td>" . $row["id"] . "</td>";
+					echo "<td>" . $counter . "</td>";
 					echo "<td>" . $row["operator"] . "</td>";
 					echo "<td>" . $row["server"] . "</td>";
 					echo "<td>" . $row["status_err"] . "</td>";
@@ -106,9 +111,12 @@ $result = $conn->query($query);
 					echo "<td>" . $row["vendor"] . "</td>";
 					echo "<td>" . $row["url"] . "</td>";
 					echo "<td>" . $row["fname"] . "</td>";
+					echo "<td>" . $row["time_log"] . "</td>";
 					echo '<td><a href="update.php?id=' . $row["id"] . '"><i class="bi bi-pencil-fill edit-icon"></i></a></td>';
 					echo '<td><a href="delete.php?id=' . $row["id"] . '"><i class="bi bi-trash3-fill delete-icon"></i></a></td>';
 					echo "</tr>";
+
+					$counter++;
 				}
 			} else {
 				echo "<tr><td colspan='3'>Tidak ada data</td></tr>";

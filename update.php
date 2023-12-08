@@ -75,6 +75,13 @@ $conn->close();
             cursor: pointer;
             width: 100%;
         }
+
+        .readonly {
+            background-color: #f0f0f0;
+            /* Warna abu-abu */
+            color: #555;
+            /* Warna teks */
+        }
     </style>
 </head>
 
@@ -85,7 +92,7 @@ $conn->close();
     <form method="post" action="proses_update.php?id=<?php echo $id; ?>">
 
         <label for="id">ID:</label>
-        <input type="text" id="id" name="id" value="<?php echo $row['id']; ?>" readonly>
+        <input type="text" id="id" name="id" value="<?php echo $row['id']; ?>" readonly class="readonly">
 
         <label for="operator">Operator:</label>
         <select id="operator" name="operator">
