@@ -1,33 +1,41 @@
 <?php
 include 'konekDB.php';
 
-// koneksi
+// php koneksi DB
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// get ID
+// Ambil ID dari URL
 $id = $_GET['id'];
 
-// validasi ID
+// Validasi ID
 if (!is_numeric($id)) {
     die("ID tidak valid");
 }
 
+// Query SQL untuk mendapatkan data yang akan diupdate
+$query = "SELECT * FROM config_status_telco_new WHERE ID = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $id);
+
+// Eksekusi query
+$stmt->execute();
+
+// Ambil hasil query
+$result = $stmt->get_result();
+
+// Cek apakah data ditemukan
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+} else {
+    die("Data tidak ditemukan");
+}
+
+// Tutup statement
+$stmt->close();
+
 // Ambil data dari tabel g_vendor untuk dropdown "vendor"
 $queryVendor = "SELECT * FROM g_vendor";
 $resultVendor = $conn->query($queryVendor);
-
-// ambil data dari db
-$query = "SELECT * FROM config_status_telco WHERE ID = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$row = $result->fetch_assoc();
-
-// tutup statement & close
-$stmt->close();
-
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -36,7 +44,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Data</title>
+    <title>Update Form</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -58,7 +66,13 @@ $conn->close();
             margin-bottom: 8px;
         }
 
-        form input,
+        form input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
         form select {
             width: 100%;
             padding: 8px;
@@ -76,11 +90,26 @@ $conn->close();
             width: 100%;
         }
 
-        .readonly {
-            background-color: #f0f0f0;
-            /* Warna abu-abu */
-            color: #555;
-            /* Warna teks */
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+
+        form .input-group {
+            position: relative;
+            width: 100%;
+        }
+
+
+        form .toggle-password {
+            position: absolute;
+            top: 35%;
+            right: 0;
+            transform: translateY(-50%);
+            cursor: pointer;
+            padding: 5px;
         }
     </style>
 </head>
@@ -91,8 +120,9 @@ $conn->close();
 
     <form method="post" action="proses_update.php?id=<?php echo $id; ?>">
 
+        <!-- Form input disini  -->
         <label for="id">ID:</label>
-        <input type="text" id="id" name="id" value="<?php echo $row['id']; ?>" readonly class="readonly">
+        <input type="text" id="id" name="id" value="<?php echo $row['id']; ?>" readonly>
 
         <label for="operator">Operator:</label>
         <select id="operator" name="operator">
@@ -108,6 +138,16 @@ $conn->close();
         <label for="server">Server:</label>
         <input type="text" id="server" name="server" value="<?php echo $row['server']; ?>">
 
+        <!-- Input untuk field baru -->
+        <label for="user_ssh">User SSH:</label>
+        <input type="text" id="user_ssh" name="user_ssh" value="<?php echo $row['user_ssh']; ?>">
+
+        <label for="pathlog">Path Log:</label>
+        <input type="text" id="pathlog" name="pathlog" value="<?php echo $row['pathlog']; ?>">
+
+        <label for="logfile">Log File:</label>
+        <input type="text" id="logfile" name="logfile" value="<?php echo $row['logfile']; ?>">
+
         <label for="status_err">Status Error:</label>
         <input type="text" id="status_err" name="status_err" value="<?php echo $row['status_err']; ?>">
 
@@ -121,12 +161,12 @@ $conn->close();
         </select>
 
         <label for="vendor">Vendor:</label>
-        <select id="vendor" name="vendor">
+        <select id="vendor" name="vendor" required>
             <?php
             // Tampilkan dropdown untuk "vendor"
             if ($resultVendor->num_rows > 0) {
                 while ($rowVendor = $resultVendor->fetch_assoc()) {
-                    echo '<option value="' . $rowVendor["vendor_name"] . '" ' . ($row['vendor'] == $rowVendor["vendor_name"] ? 'selected' : '') . '>' . $rowVendor["vendor_name"] . '</option>';
+                    echo '<option value="' . $rowVendor["vendor_name"] . '" ' . (($row['vendor'] == $rowVendor["vendor_name"]) ? 'selected' : '') . '>' . $rowVendor["vendor_name"] . '</option>';
                 }
             }
             ?>
@@ -135,12 +175,46 @@ $conn->close();
         <label for="url">URL:</label>
         <input type="text" id="url" name="url" value="<?php echo $row['url']; ?>">
 
+        <label for="port">Port:</label>
+        <input type="text" id="port" name="port" value="<?php echo $row['port']; ?>">
+
         <label for="fname">Fname:</label>
         <input type="text" id="fname" name="fname" value="<?php echo $row['fname']; ?>">
+
+        <label for="uname">Username:</label>
+        <input type="text" id="uname" name="uname" value="<?php echo $row['uname']; ?>">
+
+        <!--   <label for="upass">Password:</label>
+        <div class="password-container">
+            <input type="password" id="upass" name="upass" value="<?php echo $row['upass']; ?>">
+            <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+        </div> -->
+
+        <label for="upass">Password:</label>
+        <div class="input-group">
+            <input type="password" id="upass" name="upass" value="<?php echo $row['upass']; ?>">
+            <span class="toggle-password" onclick="togglePasswordVisibility('upass')">👁️</span>
+        </div>
+
+        <label for="is_active">is Active:</label>
+        <select id="is_active" name="is_active">
+            <option value="1" <?php echo ($row['is_active'] == '1') ? 'selected' : ''; ?>>Aktif</option>
+            <option value="0" <?php echo ($row['is_active'] == '0') ? 'selected' : ''; ?>>Non-Aktif</option>
+        </select>
 
         <button type="submit">Update</button>
     </form>
 
 </body>
+
+<script>
+    function togglePasswordVisibility() {
+        var passwordInput = document.getElementById('upass');
+        var passwordType = passwordInput.getAttribute('type');
+
+        // Toggle tipe input antara password dan text
+        passwordInput.setAttribute('type', passwordType === 'password' ? 'text' : 'password');
+    }
+</script>
 
 </html>

@@ -61,6 +61,28 @@ $resultVendor = $conn->query($queryVendor);
             cursor: pointer;
             width: 100%;
         }
+
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+
+        form .input-group {
+            position: relative;
+            width: 100%;
+        }
+
+
+        form .toggle-password {
+            position: absolute;
+            top: 35%;
+            right: 0;
+            transform: translateY(-50%);
+            cursor: pointer;
+            padding: 5px;
+        }
     </style>
 </head>
 
@@ -69,7 +91,7 @@ $resultVendor = $conn->query($queryVendor);
     <h2 style="text-align: center;">Input Form</h2>
 
     <form method="post" action="proses_input.php">
-        <label for="operator">Services:</label>
+        <label for="operator">Operator:</label>
         <select id="operator" name="operator">
             <option value="Telkomsel">Telkomsel</option>
             <option value="Excelcom">Excelcom</option>
@@ -82,6 +104,15 @@ $resultVendor = $conn->query($queryVendor);
 
         <label for="server">Server:</label>
         <input type="text" id="server" name="server">
+
+        <label for="user_ssh">User SSH:</label>
+        <input type="text" id="user_ssh" name="user_ssh">
+
+        <label for="pathlog">Path Log:</label>
+        <input type="text" id="pathlog" name="pathlog">
+
+        <label for="logfile">Log File:</label>
+        <input type="text" id="logfile" name="logfile">
 
         <label for="status_err">Status Error:</label>
         <input type="text" id="status_err" name="status_err">
@@ -110,12 +141,39 @@ $resultVendor = $conn->query($queryVendor);
         <label for="url">URL:</label>
         <input type="text" id="url" name="url">
 
+        <label for="port">Port:</label>
+        <input type="text" id="port" name="port">
+
         <label for="fname">Fname:</label>
         <input type="text" id="fname" name="fname">
+
+        <label for="uname">Username:</label>
+        <input type="text" id="uname" name="uname">
+
+        <label for="upass">Password:</label>
+        <div class="input-group">
+            <input type="password" id="upass" name="upass">
+            <span class="toggle-password" onclick="togglePasswordVisibility('upass')">👁️</span>
+        </div>
+
+        <label for="is_active">is Active:</label>
+        <select id="is_active" name="is_active" required>
+            <option value="1">Aktif</option>
+            <option value="0">Non-Aktif</option>
+        </select>
 
         <button type="submit">Submit</button>
     </form>
 
 </body>
+
+<script>
+    function togglePasswordVisibility(inputId) {
+        var passwordInput = document.getElementById(inputId);
+        var type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+    }
+</script>
+
 
 </html>
